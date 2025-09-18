@@ -32,5 +32,14 @@ public abstract class Peca {
     public void setY(int y) {
         this.y = y;
     }
+
+    public abstract boolean movimentoValido(int newX, int newY, Peca[][] board);
+
+    public abstract int getValor();
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "(" + cor + ")";
+    }
 }
 
