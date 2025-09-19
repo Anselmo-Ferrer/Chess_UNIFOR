@@ -6,7 +6,16 @@ public class Rei extends Peca {
 
     @Override
     public boolean movimentoValido(int newX, int newY, Peca[][] board) {
-        return true;
+        int dx = Math.abs(newX - x);
+        int dy = Math.abs(newY - y);
+
+        if ((dx <= 1 && dy <= 1) && !(dx == 0 && dy == 0)) {
+            if (board[newX][newY] == null || !board[newX][newY].getCor().equals(cor)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
