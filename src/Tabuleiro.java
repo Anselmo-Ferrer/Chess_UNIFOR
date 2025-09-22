@@ -41,7 +41,10 @@ public class Tabuleiro {
     }
 
     public void imprimir() {
+        System.out.println("  A B C D E F G H");
+        System.out.println(" +----------------+");
         for (int i = 0; i < 8; i++) {
+            System.out.print((8 - i) + "|");
             for (int j = 0; j < 8; j++) {
                 if (grid[i][j] != null) {
                     System.out.print(grid[i][j].toString().charAt(0) + " ");
@@ -49,8 +52,11 @@ public class Tabuleiro {
                     System.out.print(". ");
                 }
             }
-            System.out.println();
+            System.out.println("|" + (8 - i));
         }
+
+        System.out.println(" +----------------+");
+        System.out.println("  A B C D E F G H");
     }
 
     public Peca[][] getGrid() {
