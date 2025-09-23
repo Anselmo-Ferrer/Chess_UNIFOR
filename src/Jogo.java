@@ -157,7 +157,7 @@ public class Jogo {
                     reiX = i; reiY = j;
                 }
 
-        // verificar ataques
+        // verificar ataques, verifica se alguma peca adversaria pode atacar o rei, se puder retorna true
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
                 Peca p = grid[i][j];
@@ -174,10 +174,12 @@ public class Jogo {
 
         Peca[][] grid = tabuleiro.getGrid();
 
+        // 2 primeiros loops pra pegar todas as pecas do tabuleiro(as que nao sao nulas)
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Peca p = grid[i][j];
                 if (p != null && p.getCor().equals(cor)) {
+                    // 2 loops internos pra ver todos os movimentos que a peca poderia fazer
                     for (int x = 0; x < 8; x++) {
                         for (int y = 0; y < 8; y++) {
                             if (p.movimentoValido(x, y, grid)) {
@@ -187,12 +189,14 @@ public class Jogo {
                                 int oldX = p.getX(), oldY = p.getY();
                                 p.setX(x); p.setY(y);
 
+                                // Chama o método estaEmXeque para ver se, depois desse movimento, o rei ainda estaria em perigo.
                                 boolean aindaEmXeque = estaEmXeque(cor);
 
                                 // desfaz
                                 grid[i][j] = p; grid[x][y] = destino;
                                 p.setX(oldX); p.setY(oldY);
 
+                                // Se algum movimento permite que o rei não fique em xeque, então não é xeque-mate
                                 if (!aindaEmXeque) return false;
                             }
                         }
