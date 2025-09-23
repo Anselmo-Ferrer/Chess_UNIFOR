@@ -37,6 +37,9 @@ public class Jogo {
         tabuleiro.setPeca(xDestino, yDestino, peca);
         tabuleiro.setPeca(xOrigem, yOrigem, null);
 
+        promoverPeaoSeNecessario(peca, xDestino, yDestino);
+
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String hora = LocalDateTime.now().format(formatter);
 
@@ -113,4 +116,24 @@ public class Jogo {
             System.out.println(registro);
         }
     }
+    private void promoverPeaoSeNecessario(Peca peca, int xDestino, int yDestino) {
+        if (peca instanceof Peao) {
+            boolean chegouNaUltimaLinhaBranco = peca.getCor().equals("Branco") && xDestino == 0;
+            boolean chegouNaUltimaLinhaPreto = peca.getCor().equals("Preto") && xDestino == 7;
+
+            if (chegouNaUltimaLinhaBranco || chegouNaUltimaLinhaPreto) {
+                Dama novaDama = new Dama(peca.getCor(), xDestino, yDestino);
+                tabuleiro.setPeca(xDestino, yDestino, novaDama);
+
+                historico.add(turno + " promoveu um peão a dama em (" + xDestino + "," + yDestino + ")");
+            }
+        }
+    }
+
+
+
+
+
+
+
 }
