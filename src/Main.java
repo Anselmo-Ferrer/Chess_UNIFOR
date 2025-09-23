@@ -24,9 +24,8 @@ public class Main {
                 }
 
                 String pos = partes[1].toUpperCase();
-                int[] coods = converterNotacaoParaCoordenada(pos);
-                int x = coods[0];
-                int y = coods[1];
+                int y = pos.charAt(0) - 'A'; // coluna
+                int x = 8 - Character.getNumericValue(pos.charAt(1)); // linha
 
                 System.out.println("Movimentos possíveis para " + pos + ":");
                 var movimentos = jogo.possiveisMovimentos(x, y);
@@ -52,18 +51,16 @@ public class Main {
                 continue;
             }
 
-            String origemStr = partes[0].toUpperCase();
-            String destinoStr = partes[1].toUpperCase();
+            String origem = partes[0].toUpperCase();
+            String destino = partes[1].toUpperCase();
 
             // Origem
-            int[] coodsOrigem = converterNotacaoParaCoordenada(origemStr);
-            int xO = coodsOrigem[0];
-            int yO = coodsOrigem[1];
+            int yO = origem.charAt(0) - 'A';        // Coluna
+            int xO = 8 - Character.getNumericValue(origem.charAt(1)); // Linha
 
             // Destino
-            int[] coodsDestino = converterNotacaoParaCoordenada(destinoStr);
-            int xD = coodsDestino[0];
-            int yD = coodsDestino[1];
+            int yD = destino.charAt(0) - 'A';
+            int xD = 8 - Character.getNumericValue(destino.charAt(1));
 
             String resultado = jogo.mover(xO, yO, xD, yD);
             System.out.println(resultado);
@@ -75,16 +72,5 @@ public class Main {
 
         sc.close();
         System.out.println("Jogo encerrado.");
-    }
-
-    /**
-     * Converte uma notação de xadrez (Ex: "E2") para coordenadas de matriz (x, y).
-     * @param notacao A string da notação.
-     * @return um array de int com {x, y}.
-     */
-    public static int[] converterNotacaoParaCoordenada(String notacao) {
-        int y = notacao.charAt(0) - 'A'; // Coluna
-        int x = 8 - Character.getNumericValue(notacao.charAt(1)); // Linha
-        return new int[]{x, y};
     }
 }
