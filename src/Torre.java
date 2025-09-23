@@ -6,28 +6,31 @@ public class Torre extends Peca {
 
     @Override
     public boolean movimentoValido(int newX, int newY, Peca[][] tabuleiro) {
-        // 1. Verifica se movimento é reto (mesma linha ou mesma coluna)
-        if (this.x != newX && this.y != newY) {
-            return false;
-        }
+        // Sai se destino fora do tabuleiro
+        if (newX < 0 || newX > 7 || newY < 0 || newY > 7) return false;
 
-        // 2. Movimento horizontal (mesma linha)
+        // 1. Movimento reto (linha ou coluna)
+        if (this.x != newX && this.y != newY) return false;
+
+        // 2. Movimento horizontal
         if (this.x == newX) {
             int passo = (newY > this.y) ? 1 : -1;
             for (int j = this.y + passo; j != newY; j += passo) {
-                if (tabuleiro[this.x][j] != null) return false; // tem peça no caminho
+                if (j < 0 || j > 7) return false; // proteção extra
+                if (tabuleiro[this.x][j] != null) return false; // peça no caminho
             }
         }
 
-        // 3. Movimento vertical (mesma coluna)
+        // 3. Movimento vertical
         if (this.y == newY) {
             int passo = (newX > this.x) ? 1 : -1;
             for (int i = this.x + passo; i != newX; i += passo) {
-                if (tabuleiro[i][this.y] != null) return false; // tem peça no caminho
+                if (i < 0 || i > 7) return false; // proteção extra
+                if (tabuleiro[i][this.y] != null) return false; // peça no caminho
             }
         }
 
-        // 4. Captura: só pode capturar se for peça de cor diferente
+        // 4. Captura
         if (tabuleiro[newX][newY] != null &&
                 tabuleiro[newX][newY].getCor().equals(this.cor)) {
             return false;

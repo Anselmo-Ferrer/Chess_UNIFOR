@@ -31,45 +31,60 @@ public class Jogo {
         if (!peca.getCor().equals(turno)) return "Não é o turno da sua cor!";
         if (!peca.movimentoValido(xDestino, yDestino, grid)) return "Movimento inválido para essa peça!";
 
+        // guarda o que havia no destino pra poder desfazer se necessário
         Peca capturada = grid[xDestino][yDestino];
 
-        // Move a peça
-        tabuleiro.setPeca(xDestino, yDestino, peca);
-        tabuleiro.setPeca(xOrigem, yOrigem, null);
+        // --- Simula o movimento no próprio grid (faz e depois confirma) ---
+        grid[xDestino][yDestino] = peca;
+        grid[xOrigem][yOrigem] = null;
+        int oldX = peca.getX(), oldY = peca.getY();
+        peca.setX(xDestino); peca.setY(yDestino);
 
+        // Se o movimento deixa o próprio rei em xeque, desfaz e rejeita
+        if (estaEmXeque(turno)) {
+            grid[xOrigem][yOrigem] = peca;
+            grid[xDestino][yDestino] = capturada;
+            peca.setX(oldX); peca.setY(oldY);
+            return "Movimento inválido: deixa seu rei em xeque!";
+        }
+
+        // Promoção (se ocorrer, o método irá sobrescrever a peça no tabuleiro)
         promoverPeaoSeNecessario(peca, xDestino, yDestino);
+        // recarrega referência (caso tenha sido promovido)
+        peca = grid[xDestino][yDestino];
 
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String hora = LocalDateTime.now().format(formatter);
-
-        String registro = hora + " - " + turno + " moveu " + peca.toString() +
-                " de (" + xOrigem + "," + yOrigem + ") para (" + xDestino + "," + yDestino + ")";
-
+        // Atualiza pontuação caso tenha capturado algo
         if (capturada != null) {
-            registro += " capturando " + capturada.toString();
-
-            // Atualiza pontuação do adversário
             if (capturada.getCor().equals("Branco")) {
                 pontosPreto += capturada.getValor();
             } else {
                 pontosBranco += capturada.getValor();
             }
-
-            // Vitória se capturou o rei
-            if (capturada instanceof Rei) {
-                historico.add(turno + " venceu a partida!");
-                imprimirTabuleiro();
-                imprimirHistorico();
-                System.out.println("=== FIM DE JOGO ===");
-                System.exit(0);
-            }
         }
 
+        // Registra movimento no histórico
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String hora = LocalDateTime.now().format(formatter);
+        String registro = hora + " - " + turno + " moveu " + peca.toString() +
+                " de (" + xOrigem + "," + yOrigem + ") para (" + xDestino + "," + yDestino + ")";
+        if (capturada != null) registro += " capturando " + capturada.toString();
         historico.add(registro);
 
-        // Alterna o turno
-        turno = turno.equals("Branco") ? "Preto" : "Branco";
+        // Verifica se o adversário está em xeque / xeque-mate
+        String adversario = turno.equals("Branco") ? "Preto" : "Branco";
+        if (estaEmXequeMate(adversario)) {
+            historico.add(turno + " deu xeque-mate!");
+            imprimirTabuleiro();
+            imprimirHistorico();
+            System.out.println("=== FIM DE JOGO ===");
+            System.exit(0);
+        } else if (estaEmXeque(adversario)) {
+            historico.add(turno + " deu xeque em " + adversario + "!");
+            System.out.println("Xeque!");
+        }
+
+        // Alterna turno
+        turno = adversario;
 
         return "Movimento realizado com sucesso!";
     }
@@ -116,6 +131,7 @@ public class Jogo {
             System.out.println(registro);
         }
     }
+
     private void promoverPeaoSeNecessario(Peca peca, int xDestino, int yDestino) {
         if (peca instanceof Peao) {
             boolean chegouNaUltimaLinhaBranco = peca.getCor().equals("Branco") && xDestino == 0;
@@ -130,7 +146,62 @@ public class Jogo {
         }
     }
 
+    private boolean estaEmXeque(String cor) {
+        Peca[][] grid = tabuleiro.getGrid();
+        int reiX = -1, reiY = -1;
 
+        // localizar o rei
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                if (grid[i][j] instanceof Rei && grid[i][j].getCor().equals(cor)) {
+                    reiX = i; reiY = j;
+                }
+
+        // verificar ataques
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+                Peca p = grid[i][j];
+                if (p != null && !p.getCor().equals(cor) && p.movimentoValido(reiX, reiY, grid))
+                    return true;
+            }
+
+        return false;
+    }
+
+    // Verifica se é xeque-mate
+    private boolean estaEmXequeMate(String cor) {
+        if (!estaEmXeque(cor)) return false;
+
+        Peca[][] grid = tabuleiro.getGrid();
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Peca p = grid[i][j];
+                if (p != null && p.getCor().equals(cor)) {
+                    for (int x = 0; x < 8; x++) {
+                        for (int y = 0; y < 8; y++) {
+                            if (p.movimentoValido(x, y, grid)) {
+                                // Simula o movimento (faz e desfaz)
+                                Peca destino = grid[x][y];
+                                grid[x][y] = p; grid[i][j] = null;
+                                int oldX = p.getX(), oldY = p.getY();
+                                p.setX(x); p.setY(y);
+
+                                boolean aindaEmXeque = estaEmXeque(cor);
+
+                                // desfaz
+                                grid[i][j] = p; grid[x][y] = destino;
+                                p.setX(oldX); p.setY(oldY);
+
+                                if (!aindaEmXeque) return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
 
 
