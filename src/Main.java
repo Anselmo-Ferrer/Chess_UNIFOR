@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        JogoController controller = new JogoController();
+        PartidaController controller = new PartidaController();
         Scanner sc = new Scanner(System.in);
 
         System.out.println("=== Jogo de Xadrez ===");
@@ -17,7 +17,13 @@ public class Main {
             if (input.toUpperCase().startsWith("MOVS")) {
                 String pos = input.split(" ")[1].toUpperCase();
                 var movimentos = controller.movimentosPossiveis(pos);
-                System.out.println(movimentos);
+
+                for (String mov : movimentos) {
+                    int x = Integer.parseInt(mov.substring(1, 2));
+                    int y = Integer.parseInt(mov.substring(3, 4));
+                    System.out.print(NotacaoXadrez.paraNotacao(x, y) + " ");
+                }
+                System.out.println();
                 continue;
             }
 
@@ -33,5 +39,13 @@ public class Main {
 
         sc.close();
         System.out.println("Jogo encerrado.");
+    }
+
+    public class NotacaoXadrez {
+        public static String paraNotacao(int x, int y) {
+            String coluna = String.valueOf((char) ('A' + y));
+            int linha = 8 - x;
+            return coluna + linha;
+        }
     }
 }

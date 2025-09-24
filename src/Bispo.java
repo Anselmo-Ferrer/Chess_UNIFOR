@@ -19,10 +19,15 @@ public class Bispo extends Peca {
         int cx = x + stepX;
         int cy = y + stepY;
 
-        while (cx != newX && cy != newY) {
-            if (tabuleiro[cx][cy] != null) {
-                return false; // há peça no caminho
+        while (cx != newX || cy != newY) {
+            if (cx < 0 || cx >= 8 || cy < 0 || cy >= 8) {
+                return false;
             }
+
+            if (tabuleiro[cx][cy] != null) {
+                return false;
+            }
+
             cx += stepX;
             cy += stepY;
         }

@@ -3,14 +3,14 @@ import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Jogo {
+public class Partida {
     private Tabuleiro tabuleiro;
     private String turno; // "Branco" ou "Preto"
     private List<String> historico;
     private int pontosBranco = 0;
     private int pontosPreto = 0;
 
-    public Jogo() {
+    public Partida() {
         tabuleiro = new Tabuleiro();
         turno = "Branco";
         historico = new ArrayList<>();
@@ -76,7 +76,7 @@ public class Jogo {
             historico.add(turno + " deu xeque-mate!");
             imprimirTabuleiro();
             imprimirHistorico();
-            System.out.println("=== FIM DE JOGO ===");
+            System.out.println("=== FIM DA PARTIDA ===");
             System.exit(0);
         } else if (estaEmXeque(adversario)) {
             historico.add(turno + " deu xeque em " + adversario + "!");
