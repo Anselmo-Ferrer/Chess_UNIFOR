@@ -86,7 +86,7 @@ public class Partida {
         // Alterna turno
         turno = adversario;
 
-        return "Movimento realizado com sucesso!";
+        return registro;
     }
 
     // Retorna todos os movimentos possíveis para uma peça

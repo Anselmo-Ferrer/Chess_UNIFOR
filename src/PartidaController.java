@@ -26,4 +26,16 @@ public class PartidaController {
     public void imprimirHistorico() { partida.imprimirHistorico(); }
     public void exibirPontuacao() { partida.calcularEExibirPontuacao(); }
     public String getTurno() { return partida.getTurno(); }
+
+    public Peca[][] getGrid() {
+        return partida.getTabuleiro().getGrid();
+    }
+
+    public int getPontosBranco() {
+        return partida.getPontosBranco();
+    }
+
+    public int getPontosPreto() {
+        return partida.getPontosPreto();
+    }
 }
