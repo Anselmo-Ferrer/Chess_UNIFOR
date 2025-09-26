@@ -48,6 +48,10 @@ public class Partida {
             return "Movimento inválido: deixa seu rei em xeque!";
         }
 
+        if (peca instanceof Peao) {
+            ((Peao) peca).setPrimeiroMovimento(false);
+        }
+
         // Promoção (se ocorrer, o método irá sobrescrever a peça no tabuleiro)
         promoverPeaoSeNecessario(peca, xDestino, yDestino);
         // recarrega referência (caso tenha sido promovido)
@@ -76,11 +80,14 @@ public class Partida {
             historico.add(turno + " deu xeque-mate!");
             imprimirTabuleiro();
             imprimirHistorico();
+            turno = adversario;
             System.out.println("=== FIM DA PARTIDA ===");
-            System.exit(0);
+            return "=== FIM DA PARTIDA === \n" + turno + " deu xeque-mate!";
         } else if (estaEmXeque(adversario)) {
             historico.add(turno + " deu xeque em " + adversario + "!");
             System.out.println("Xeque!");
+            turno = adversario;
+            return (turno + " deu xeque em " + adversario + "!");
         }
 
         // Alterna turno
